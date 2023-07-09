@@ -11,11 +11,11 @@ export default function SearchBar() {
     }
 
     return (
-        <div>
+        <div className='w-full' >
             <input
                 name='SearchQuery'
                 placeholder='Search Exployees by Name, Email or Role'
-                className=' text-center border-2 w-full h-12 font-bold'
+                className='  border-2 w-full h-12 font-bold shadow-md'
                 value={inputData.SearchQuery}
                 onChange={changeHandler} />
         </div>

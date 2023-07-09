@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import SearchBar from '../../Components/SearchBar/SearchBar';
 import { FaRegEdit } from 'react-icons/fa';
 import { MdDeleteForever } from 'react-icons/md';
+import "./LandingPage.css"
 
 export default function LandingPage() {
     const [employeeData, setEmployeeData] = useState();
@@ -16,37 +17,36 @@ export default function LandingPage() {
                 console.error(error);
             }
         }
-
         fetchData();
     }, []);
 
     return (
-        <div className='m-2'>
+        <div className=' m-2 flex flex-col justify-start items-center'>
             <SearchBar />
-            <div className='' >
-                <table>
-                    <thead>
-                        <tr>
-                            <th>
+            <div className='w-full m-2' >
+                <table className='w-full' >
+                    <thead >
+                        <tr className='h-12 shadow-md border'>
+                            <th className='border'  >
                                 <input type="checkbox" />
                             </th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Action</th>
+                            <th className='border' >Name</th>
+                            <th className='border' >Email</th>
+                            <th className='border' >Role</th>
+                            <th className='border' >Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody >
                         {employeeData &&
                             employeeData.map((val) => (
-                                <tr key={val.id}>
-                                    <td>
+                                <tr key={val.id} className='h-12 border shadow-sm'>
+                                    <td className='border' >
                                         <input type="checkbox" />
                                     </td>
-                                    <td>{val.name}</td>
-                                    <td>{val.email}</td>
-                                    <td>{val.role}</td>
-                                    <td>
+                                    <td className='border' >{val.name}</td>
+                                    <td className='border' >{val.email}</td>
+                                    <td className='border' >{val.role}</td>
+                                    <td className='border text-2xl' >
                                         <button><FaRegEdit /></button>
                                         <button><MdDeleteForever /></button>
                                     </td>
