@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 
 
-export default function SearchBar() {
+export default function SearchBar({ getData }) {
 
     const [inputData, setInputData] = useState({ SearchQuery: "" });
 
     function changeHandler(e) {
         const { name, value } = e.target;
         setInputData({ ...inputData, [name]: value });
+        getData(inputData);
     }
 
     return (
