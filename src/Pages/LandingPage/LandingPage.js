@@ -3,6 +3,8 @@ import SearchBar from '../../Components/SearchBar/SearchBar';
 import { FaRegEdit } from 'react-icons/fa';
 import { MdDeleteForever } from 'react-icons/md';
 import "./LandingPage.css";
+import ReactPaginate from 'react-paginate';
+import EditForm from '../../Components/EditComponent/EditComponent';
 
 export default function LandingPage() {
     const [employeeData, setEmployeeData] = useState([]);
@@ -24,6 +26,42 @@ export default function LandingPage() {
         fetchData();
     }, []);
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////Pagination Functionality
+    const [pageNumber, setPageNumber] = useState(0);
+    const usersPerPage = 10;
+    const lastIndex = pageNumber * usersPerPage;
+    const pageCount = Math.ceil(filteredData.length / usersPerPage)
+    const displayUsers = filteredData.slice(lastIndex, lastIndex + usersPerPage).map((val) => {
+        return (
+            <tr key={val.id} className='h-12 border shadow-sm'>
+                <td className='border'>
+                    <input type="checkbox" />
+                </td>
+                <td className='border'>{val.name}</td>
+                <td className='border'>{val.email}</td>
+                <td className='border'>{val.role}</td>
+                <td className='border text-2xl'>
+                    <div>
+                        <button
+                            className='text-blue-700'
+                            onClick={() => handleEdit(val)} >
+                            <FaRegEdit />
+                        </button>
+                        <button
+                            className='text-red-600'
+                            onClick={() => handleDelete(val.id)}  >
+                            <MdDeleteForever />
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        )
+    });
+    function changePage({ selected }) {
+        setPageNumber(selected);
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////Search Functionality
+
     function searchData(inputData) {
         const filtered = employeeData.filter((val) => {
             const nameMatch = val.name.toLowerCase().includes(inputData.SearchQuery);
@@ -34,6 +72,7 @@ export default function LandingPage() {
         setFilteredData(filtered);
     };
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////// Edit Functionality
     function handleEdit(values) {
         setEdit(true);
         setEditData(values);
@@ -50,7 +89,7 @@ export default function LandingPage() {
         const { name, value } = e.target;
         setEditData({ ...editData, [name]: value });
     };
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////Delete Functionality
     function handleDelete(id) {
         const updatedData = filteredData.filter(val => val.id !== id);
         setFilteredData(updatedData);
@@ -59,21 +98,15 @@ export default function LandingPage() {
     return (
         <div className='m-2 gap-2 flex flex-col justify-start items-center'>
             <SearchBar getData={searchData} />
-
-            <form className={edit ? "flex gap-4 items-center justify-center shadow-sm w-full border-2 p-2 " : 'hidden'} onSubmit={editFormSubitHandler}  >
-                <input className='border w-max' name='name' value={editData.name} onChange={editFormChangeHandler} />
-                <input className='border w-max ' name='email' value={editData.email} onChange={editFormChangeHandler} />
-                <input className='border w-max' name='role' value={editData.role} onChange={editFormChangeHandler} />
-                <button
-                    className=' hover:text-lg h-max bg-white p-2 flex justify-center items-center rounded-b-2xl text-red-600 font-extrabold shadow-md border-2 border-black' >
-                    UPDATE</button>
-                <button
-                    onClick={() => setEdit(false)}
-                    className=' hover:text-lg h-max bg-white p-2 flex justify-center items-center rounded-b-2xl text-red-600 font-extrabold shadow-md border-2 border-black'>
-                    CANCEL
-                </button>
-            </form>
-
+            {edit && (
+                <EditForm
+                    editData={editData}
+                    setEditData={setEditData}
+                    editFormSubitHandler={editFormSubitHandler}
+                    editFormChangeHandler={editFormChangeHandler}
+                    setEdit={setEdit}
+                />
+            )}
             <div className='w-full m-1'>
                 {filteredData.length === 0 ? (
                     <p>No results found.</p>
@@ -91,25 +124,22 @@ export default function LandingPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredData.map((val) => (
-                                <tr key={val.id} className='h-12 border shadow-sm'>
-                                    <td className='border'>
-                                        <input type="checkbox" />
-                                    </td>
-                                    <td className='border'>{val.name}</td>
-                                    <td className='border'>{val.email}</td>
-                                    <td className='border'>{val.role}</td>
-                                    <td className='border text-2xl'>
-                                        <div>
-                                            <button className='text-blue-700' onClick={() => handleEdit(val)} ><FaRegEdit /></button>
-                                            <button className='text-red-600' onClick={() => handleDelete(val.id)}  ><MdDeleteForever /></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                            {displayUsers}
                         </tbody>
                     </table>
                 )}
+            </div>
+            <div className='flex w-full justify-start border rounded-lg p-2 shadow-md '>
+                <button
+                    className='  h-max bg-white p-2 flex justify-center items-center rounded-b-2xl text-sm text-red-600 font-bold shadow-md border-2 border-black'>
+                    DELETE ALL</button>
+                <ReactPaginate
+                    previousLabel={"Previous"}
+                    nextLabel={"Next"}
+                    pageCount={pageCount}
+                    onPageChange={changePage}
+                    className='flex gap-3 border-2 border-gray-800 rounded-lg p-2 shadow-md m-auto'
+                />
             </div>
         </div>
     );
