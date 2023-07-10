@@ -7,7 +7,7 @@ import "./LandingPage.css";
 export default function LandingPage() {
     const [employeeData, setEmployeeData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const [editData, setEditData] = useState({ name: "", email: "", role: "" });
+    const [editData, setEditData] = useState({ id: "", name: "", email: "", role: "" });
     const [edit, setEdit] = useState(false);
 
     useEffect(() => {
@@ -37,17 +37,43 @@ export default function LandingPage() {
     function handleEdit(values) {
         setEdit(true);
         setEditData(values);
-    }
+    };
+
+    function editFormSubitHandler(e) {
+        e.preventDefault();
+        const editIndex = filteredData.findIndex(val => val.id === editData.id);
+        filteredData.splice(editIndex, 1, editData);
+        setEdit(false);
+    };
+
+    function editFormChangeHandler(e) {
+        const { name, value } = e.target;
+        setEditData({ ...editData, [name]: value });
+    };
+
+    function handleDelete(id) {
+        const updatedData = filteredData.filter(val => val.id !== id);
+        setFilteredData(updatedData);
+    };
 
     return (
         <div className='m-2 gap-2 flex flex-col justify-start items-center'>
             <SearchBar getData={searchData} />
-            <form className={edit ? "flex gap-4 items-center justify-center shadow-sm w-full border-2 p-2 " : 'hidden'} >
-                <input className='border w-max' name='Name' value={editData.name} />
-                <input className='border w-max ' name='Email' value={editData.email} />
-                <input className='border w-max' name='Role' value={editData.role} />
-                <button className=' hover:text-lg h-max bg-white p-2 flex justify-center items-center rounded-b-2xl text-red-600 font-extrabold shadow-md border-2 border-black' >UPDATE</button>
+
+            <form className={edit ? "flex gap-4 items-center justify-center shadow-sm w-full border-2 p-2 " : 'hidden'} onSubmit={editFormSubitHandler}  >
+                <input className='border w-max' name='name' value={editData.name} onChange={editFormChangeHandler} />
+                <input className='border w-max ' name='email' value={editData.email} onChange={editFormChangeHandler} />
+                <input className='border w-max' name='role' value={editData.role} onChange={editFormChangeHandler} />
+                <button
+                    className=' hover:text-lg h-max bg-white p-2 flex justify-center items-center rounded-b-2xl text-red-600 font-extrabold shadow-md border-2 border-black' >
+                    UPDATE</button>
+                <button
+                    onClick={() => setEdit(false)}
+                    className=' hover:text-lg h-max bg-white p-2 flex justify-center items-center rounded-b-2xl text-red-600 font-extrabold shadow-md border-2 border-black'>
+                    CANCEL
+                </button>
             </form>
+
             <div className='w-full m-1'>
                 {filteredData.length === 0 ? (
                     <p>No results found.</p>
@@ -74,8 +100,10 @@ export default function LandingPage() {
                                     <td className='border'>{val.email}</td>
                                     <td className='border'>{val.role}</td>
                                     <td className='border text-2xl'>
-                                        <button onClick={() => handleEdit(val)} ><FaRegEdit /></button>
-                                        <button><MdDeleteForever /></button>
+                                        <div>
+                                            <button className='text-blue-700' onClick={() => handleEdit(val)} ><FaRegEdit /></button>
+                                            <button className='text-red-600' onClick={() => handleDelete(val.id)}  ><MdDeleteForever /></button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
