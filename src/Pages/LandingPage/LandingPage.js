@@ -5,12 +5,14 @@ import { MdDeleteForever } from 'react-icons/md';
 import "./LandingPage.css";
 import ReactPaginate from 'react-paginate';
 import EditForm from '../../Components/EditComponent/EditComponent';
-
+import "./LandingPage.css";
 export default function LandingPage() {
     const [employeeData, setEmployeeData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [editData, setEditData] = useState({ id: "", name: "", email: "", role: "" });
     const [edit, setEdit] = useState(false);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////Data Fetching
 
     useEffect(() => {
         async function fetchData() {
@@ -35,7 +37,7 @@ export default function LandingPage() {
         return (
             <tr key={val.id} className='h-12 border shadow-sm'>
                 <td className='border'>
-                    <input type="checkbox" />
+                    <input type="checkbox" name={val.name} checked={val?.isChecked || false} onChange={checkBoxChangeHandler} />
                 </td>
                 <td className='border'>{val.name}</td>
                 <td className='border'>{val.email}</td>
@@ -60,7 +62,8 @@ export default function LandingPage() {
     function changePage({ selected }) {
         setPageNumber(selected);
     }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////Search Logic
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////Search Logic
 
     function searchData(inputData) {
         const filtered = employeeData.filter((val) => {
@@ -72,7 +75,7 @@ export default function LandingPage() {
         setFilteredData(filtered);
     };
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////// Edit Logic
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Edit Logic
     function handleEdit(values) {
         setEdit(true);
         setEditData(values);
@@ -89,12 +92,38 @@ export default function LandingPage() {
         const { name, value } = e.target;
         setEditData({ ...editData, [name]: value });
     };
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////Delete Functionality
     function handleDelete(id) {
         const updatedData = filteredData.filter(val => val.id !== id);
         setFilteredData(updatedData);
     };
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////Checkbox Functionality
+
+    function checkBoxChangeHandler(e) {
+        const { name, checked } = e.target;
+        if (name === "selectAllCheckBoxes") {
+            const updatedData = filteredData.map((values) => {
+                if (filteredData.indexOf(values) >= lastIndex && filteredData.indexOf(values) < lastIndex + usersPerPage) {
+                    return { ...values, isChecked: checked };
+                }
+                return values;
+            });
+            setFilteredData(updatedData);
+        } else {
+            const updatedData = filteredData.map((values) =>
+                values.name === name ? { ...values, isChecked: checked } : values
+            );
+            setFilteredData(updatedData);
+        }
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////DeleteAll Functionality
+    function deleteAllHandler() {
+        const uncheckedBoxes = filteredData.filter((values) => values.isChecked !== true);
+        setFilteredData(uncheckedBoxes);
+    }
     return (
         <div className='m-2 gap-2 flex flex-col justify-start items-center'>
             <SearchBar getData={searchData} />
@@ -115,7 +144,7 @@ export default function LandingPage() {
                         <thead>
                             <tr className='h-12 shadow-md border'>
                                 <th className='border'>
-                                    <input type="checkbox" />
+                                    <input type="checkbox" name='selectAllCheckBoxes' checked={!filteredData.some((user) => user?.isChecked !== true)} onChange={checkBoxChangeHandler} />
                                 </th>
                                 <th className='border'>Name</th>
                                 <th className='border'>Email</th>
@@ -131,6 +160,7 @@ export default function LandingPage() {
             </div>
             <div className='flex w-full justify-start border rounded-lg p-2 shadow-md '>
                 <button
+                    onClick={deleteAllHandler}
                     className='  h-max bg-white p-2 flex justify-center items-center rounded-b-2xl text-sm text-red-600 font-bold shadow-md border-2 border-black'>
                     DELETE ALL</button>
                 <ReactPaginate
@@ -138,7 +168,12 @@ export default function LandingPage() {
                     nextLabel={"Next"}
                     pageCount={pageCount}
                     onPageChange={changePage}
-                    className='flex gap-3 border-2 border-gray-800 rounded-lg p-2 shadow-md m-auto'
+                    className='flex gap-3 border-2 border-gray-800 rounded-lg p-2 bg-slate-200 shadow-md m-auto'
+                    containerClassName='containerClass'
+                    previousLinkClassName='previousClass'
+                    nextLinkClassName='nextClass'
+                    disabledClassName='disablesClass'
+                    activeClassName='activeClass'
                 />
             </div>
         </div>

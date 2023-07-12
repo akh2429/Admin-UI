@@ -1,3 +1,26 @@
 td {
   text-align: center;
 }
+/* .containerClass {
+} */
+.previousClass {
+  border: 2px solid black;
+  padding: 2px;
+  border-radius: 25%;
+}
+.nextClass {
+  border: 2px solid black;
+  padding: 2px;
+  border-radius: 25%;
+}
+.disablesClass {
+  border: 2cappx solid black;
+  padding: 1px;
+  border-radius: 25%;
+}
+.activeClass {
+  border: 2px solid black;
+  padding: 2px;
+  border-radius: 15%;
+  background-color: aqua;
+}
